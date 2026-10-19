@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanumay Chatterjee | Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN for 3D interactive background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            cyan: '#38bdf8',
+                            purple: '#a855f7',
+                            dark: '#090d16',
+                            card: 'rgba(15, 23, 42, 0.65)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #05070e;
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tab-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+        .card-tilt {
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+        }
+        .card-tilt:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 12px 30px -10px rgba(56, 189, 248, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- 3D Interactive Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Top Floating Header -->
+    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-5xl">
+        <nav class="glass-panel rounded-full px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-400 to-purple-500 flex items-center justify-center font-bold text-slate-900 text-sm">
+                    TC
+                </div>
+                <span class="font-semibold tracking-wide text-sm hidden sm:inline">Tanumay Chatterjee</span>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                <a href="https://github.com/Tanumay-tech" target="_blank" class="hover:text-sky-400 transition flex items-center gap-1">
+                    <i data-lucide="github" class="w-4 h-4"></i> <span class="hidden md:inline">GitHub</span>
+                </a>
+                <a href="https://www.linkedin.com/in/tanumaychatterjee" target="_blank" class="hover:text-sky-400 transition flex items-center gap-1">
+                    <i data-lucide="linkedin" class="w-4 h-4"></i> <span class="hidden md:inline">LinkedIn</span>
+                </a>
+                <a href="#contact" onclick="switchTab('contact')" class="bg-sky-400/20 text-sky-300 border border-sky-400/40 px-3 py-1.5 rounded-full hover:bg-sky-400 hover:text-slate-950 font-medium transition">
+                    Hire / Connect
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="pt-28 pb-16 px-4 max-w-6xl mx-auto w-full flex-grow">
+
+        <!-- Hero Card -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-10 mb-8 border border-white/10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-72 h-72 bg-sky-500/10 rounded-full filter blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col md:flex-row gap-8 items-center justify-between relative z-10">
+                <div class="space-y-4 max-w-2xl text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-pill text-xs text-sky-300">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> B.Tech CSE (Honors Data Science)
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">
+                        Building <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-purple-400 to-pink-400">Intelligent Systems</span> & Visual Experiences.
+                    </h1>
+                    <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+                        Developer, UI/UX Designer, and Embedded Systems enthusiast based in Nagpur. Exploring the intersection of Explainable AI, Full-Stack Architecture, and Multimodal Pipelines.
+                    </p>
+                    <div class="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
+                        <span class="glass-pill px-3 py-1 rounded-lg text-xs text-slate-300 flex items-center gap-1.5">
+                            <i data-lucide="code" class="w-3.5 h-3.5 text-sky-400"></i> Full Stack & ML
+                        </span>
+                        <span class="glass-pill px-3 py-1 rounded-lg text-xs text-slate-300 flex items-center gap-1.5">
+                            <i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400"></i> Microcontrollers
+                        </span>
+                        <span class="glass-pill px-3 py-1 rounded-lg text-xs text-slate-300 flex items-center gap-1.5">
+                            <i data-lucide="camera" class="w-3.5 h-3.5 text-pink-400"></i> Media & Photography
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Profile Image Container -->
+                <div class="relative group">
+                    <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl p-1 bg-gradient-to-tr from-sky-400 to-purple-600 shadow-2xl overflow-hidden">
+                        <img src="profile.jpg" alt="Tanumay Chatterjee" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';" class="w-full h-full object-cover rounded-[14px]">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs for Clutter-Free Browsing -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8 glass-panel p-2 rounded-2xl max-w-3xl mx-auto">
+            <button onclick="switchTab('overview')" class="tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i> Overview & Skills
+            </button>
+            <button onclick="switchTab('projects')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+                <i data-lucide="folder-git-2" class="w-4 h-4"></i> Projects
+            </button>
+            <button onclick="switchTab('experience')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+                <i data-lucide="briefcase" class="w-4 h-4"></i> Experience & Timeline
+            </button>
+            <button onclick="switchTab('creatives')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+                <i data-lucide="aperture" class="w-4 h-4"></i> Media & Hobbies
+            </button>
+            <button onclick="switchTab('contact')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+                <i data-lucide="mail" class="w-4 h-4"></i> Contact
+            </button>
+        </div>
+
+        <!-- TAB CONTENT 1: OVERVIEW & SKILLS -->
+        <div id="tab-overview" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Academic Background -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt space-y-3 md:col-span-1">
+                    <div class="flex items-center gap-2 text-sky-400">
+                        <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                        <h3 class="font-semibold">Education</h3>
+                    </div>
+                    <div>
+                        <p class="font-bold text-sm">B.Tech CSE (Honors Data Science)</p>
+                        <p class="text-xs text-slate-400">Symbiosis Institute of Technology, Nagpur</p>
+                        <p class="text-xs text-sky-300/80 mt-1">Batch 2024–2028 • Semester V</p>
+                    </div>
+                    <hr class="border-white/5">
+                    <div class="text-xs text-slate-400 space-y-1">
+                        <p class="font-medium text-slate-300">Core Academics & Theory:</p>
+                        <p>Data Structures & Algorithms, Theory of Computation, Operating Systems, Database Management Systems, Compiler Construction</p>
+                    </div>
+                </div>
+
+                <!-- Technical Skills Matrix -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt space-y-4 md:col-span-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-purple-400">
+                            <i data-lucide="terminal" class="w-5 h-5"></i>
+                            <h3 class="font-semibold">Technical Stack & Competencies</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Languages (Python, C, C++, Java, JS, SQL)</span>
+                                <span class="text-sky-400">90%</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-sky-400 to-purple-500 w-[90%]"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Frameworks (React, Next.js, FastAPI, Django, Tailwind)</span>
+                                <span class="text-purple-400">88%</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-purple-400 to-pink-500 w-[88%]"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Embedded Systems (Arduino, ESP32, 8051 Assembly)</span>
+                                <span class="text-emerald-400">82%</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-emerald-400 to-sky-500 w-[82%]"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Design & Media (Figma, Photoshop, Video Editing)</span>
+                                <span class="text-pink-400">85%</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-pink-400 to-sky-400 w-[85%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 2: PROJECTS -->
+        <div id="tab-projects" class="tab-content space-y-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Project 1 -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt flex flex-col justify-between space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs px-2.5 py-1 rounded-md glass-pill text-sky-300">Explainable AI</span>
+                            <i data-lucide="code-2" class="w-5 h-5 text-sky-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">CodeReviewX</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Explainable AI code review platform combining deterministic static analysis via Python AST parsing with LLM-based architectural interpretation.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">FastAPI</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">React / Next.js</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Python AST</span>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt flex flex-col justify-between space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs px-2.5 py-1 rounded-md glass-pill text-emerald-300">HealthTech AI</span>
+                            <i data-lucide="heart-pulse" class="w-5 h-5 text-emerald-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">MindEase</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            AI mental health support platform featuring guided multiple-choice assessments, sentiment tracking, and emergency escalation workflows.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">NLP</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Tailwind CSS</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">JavaScript</span>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt flex flex-col justify-between space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs px-2.5 py-1 rounded-md glass-pill text-purple-300">Multimodal AI</span>
+                            <i data-lucide="clapperboard" class="w-5 h-5 text-purple-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">VisionTale</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Multimodal AI pipeline converting narrative text into synchronized cinematic audio-visual metadata and media assets.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Python</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Generative Media</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Streamlit</span>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt flex flex-col justify-between space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs px-2.5 py-1 rounded-md glass-pill text-pink-300">Assistive Hardware</span>
+                            <i data-lucide="cpu" class="w-5 h-5 text-pink-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Smart Spectacles Prototype</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Assistive wearable prototype for visually impaired individuals equipped with ultrasonic distance sensors, ESP32 microcontrollers, and audio alerts.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">ESP32</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">C++ / Embedded</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Wokwi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 3: EXPERIENCE & TIMELINE -->
+        <div id="tab-experience" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 sm:p-8 rounded-2xl">
+                <h3 class="text-lg font-bold mb-6 text-sky-400 flex items-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5"></i> Career & Industry Experience
+                </h3>
+                <div class="relative border-l border-white/10 pl-6 space-y-8 ml-2">
+                    <!-- Event 1 -->
+                    <div class="relative">
+                        <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-sky-400 border-4 border-slate-900"></div>
+                        <span class="text-xs text-sky-400 font-mono">Data Engineering & Operations Intern</span>
+                        <h4 class="text-base font-bold text-slate-100">Afcons Infrastructure Limited</h4>
+                        <p class="text-xs text-slate-300">Butibori Central Workshop, Nagpur</p>
+                        <p class="text-xs text-slate-400 mt-1">Engineered an IoT telematics proposal for off-grid workshop utilities and worked with enterprise SAP equipment management modules.</p>
+                    </div>
+                    <!-- Event 2 -->
+                    <div class="relative">
+                        <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-purple-400 border-4 border-slate-900"></div>
+                        <span class="text-xs text-purple-400 font-mono">Graphic Design & PR Marketing Intern</span>
+                        <h4 class="text-base font-bold text-slate-100">Rodic Consultants Pvt Ltd</h4>
+                        <p class="text-xs text-slate-400 mt-1">Created brand graphics, Republic Day national campaign materials, and internal corporate media communications.</p>
+                    </div>
+                    <!-- Event 3 -->
+                    <div class="relative">
+                        <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-pink-400 border-4 border-slate-900"></div>
+                        <span class="text-xs text-pink-400 font-mono">Smart India Hackathon</span>
+                        <h4 class="text-base font-bold text-slate-100">Team Nova Nexus</h4>
+                        <p class="text-xs text-slate-400 mt-1">Architected a hybrid Quantum-Classical Machine Learning healthcare framework and interactive presentation deck.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 4: CREATIVES & HOBBIES -->
+        <div id="tab-creatives" class="tab-content space-y-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Media Club -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt space-y-3">
+                    <div class="flex items-center gap-2 text-pink-400">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                        <h3 class="font-semibold">Media & Graphic Design</h3>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Extensive experience in corporate visual branding, promotional media campaigns, event photography, and video post-production.
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 pt-2">
+                        <div class="h-20 glass-pill rounded-lg flex items-center justify-center text-xs text-slate-400">Visual Design</div>
+                        <div class="h-20 glass-pill rounded-lg flex items-center justify-center text-xs text-slate-400">Event Recaps</div>
+                    </div>
+                </div>
+
+                <!-- Personal Hobbies Section -->
+                <div class="glass-panel p-6 rounded-2xl card-tilt space-y-3">
+                    <div class="flex items-center gap-2 text-sky-400">
+                        <i data-lucide="compass" class="w-5 h-5"></i>
+                        <h3 class="font-semibold">Personal Pursuits & Hardware</h3>
+                    </div>
+                    <div class="space-y-2 text-xs text-slate-300">
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="bike" class="w-4 h-4 text-sky-400"></i> DIY Maintenance & Performance Tracking (Yamaha MT-15 V2)
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4 h-4 text-purple-400"></i> Embedded Signal Detection (Surface EMG Sub-vocal Speech)
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="figma" class="w-4 h-4 text-pink-400"></i> Prototyping Modern Architectural Aesthetics & UI Layouts
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 5: CONTACT -->
+        <div id="tab-contact" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 sm:p-8 rounded-2xl max-w-xl mx-auto space-y-4">
+                <h3 class="text-xl font-bold text-center text-sky-400">Get in Touch</h3>
+                
+                <div class="flex justify-center gap-4 py-2">
+                    <a href="https://github.com/Tanumay-tech" target="_blank" class="glass-pill px-4 py-2 rounded-xl text-xs text-sky-300 hover:text-white hover:bg-sky-500/20 transition flex items-center gap-2">
+                        <i data-lucide="github" class="w-4 h-4"></i> GitHub Profile
+                    </a>
+                    <a href="https://www.linkedin.com/in/tanumaychatterjee" target="_blank" class="glass-pill px-4 py-2 rounded-xl text-xs text-sky-300 hover:text-white hover:bg-sky-500/20 transition flex items-center gap-2">
+                        <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn Profile
+                    </a>
+                </div>
+
+                <form id="portfolio-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Name</label>
+                        <input type="text" required placeholder="Your Name" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-400 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Email</label>
+                        <input type="email" required placeholder="your.email@example.com" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-400 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Message</label>
+                        <textarea rows="4" required placeholder="Your message..." class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-400 transition"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-sky-400 to-purple-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs hover:opacity-90 transition">
+                        Send Message
+                    </button>
+                </form>
+                <p id="form-msg" class="text-xs text-emerald-400 text-center hidden">Message sent successfully!</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-panel border-t border-white/5 py-4 text-center text-xs text-slate-500">
+        <p>© Tanumay Chatterjee | All Rights Reserved</p>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Form Submit Handler
+        document.getElementById('portfolio-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('form-msg');
+            msg.classList.remove('hidden');
+            e.target.reset();
+            setTimeout(() => msg.classList.add('hidden'), 3000);
+        });
+
+        // 3D Three.js Background Particle Matrix
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Particle Geometry
+        const particlesCount = 700;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.025,
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 3;
+
+        // Smooth Mouse Parallax Effect
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        function animate() {
+            const elapsedTime = clock.getElapsedTime();
+
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = -mouseY * 0.5;
+            particlesMesh.rotation.y += mouseX * 0.5;
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Responsive Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <!-- Discord Visitor Telemetry Script -->
+    <script>
+        // Paste your copied Discord Webhook URL inside the quotes on Line 378 below
+        const DISCORD_WEBHOOK_URL = "YOUR_DISCORD_WEBHOOK_URL_HERE";
+
+        // Auto-trigger on page load
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                const payload = {
+                    username: "Portfolio Sentinel",
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png",
+                    embeds: [{
+                        title: "🚀 New Visitor on Your Portfolio!",
+                        color: 3714552, // Sky-blue highlight
+                        fields: [
+                            { name: "🌐 IP Address", value: `\`${data.ip || 'Unknown'}\``, inline: true },
+                            { name: "📍 Location", value: `${data.city || 'Unknown'}, ${data.region \vert{}\vert{} ''},${data.country_name || ''}`, inline: true },
+                            { name: "🏢 ISP / Network", value: data.org || "Unknown", inline: false },
+                            { name: "💻 Device / User Agent", value: `\`${navigator.userAgent.substring(0, 80)}...\``, inline: false }
+                        ],
+                        footer: { text: "Live Visitor Tracking" },
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+
+                // Post telemetry payload to Discord
+                if (DISCORD_WEBHOOK_URL !== "https://discord.com/api/webhooks/1561722740229152830/fPDehz2itD2uVUtR-GExD8pcCSS8wYqHJh_5PQBU0Ezycj9OKh3g65VUwUkdvXUUeLqo") {
+                    fetch(DISCORD_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+            })
+            .catch(err => console.log('Analytics bypassed or blocked by client extension.'));
+    </script>
+</body>
+</html>
