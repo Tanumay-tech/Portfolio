@@ -512,41 +512,52 @@
     </script>
 
     <!-- Discord Visitor Telemetry Script -->
+<!-- Discord Visitor Telemetry Script -->
     <script>
-        // Paste your copied Discord Webhook URL inside the quotes on Line 378 below
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1562379838688596079/YcaQi_aqrO0Gh8kXsXTEsMDNhmK7hCCe-Qr8JNyR8dqyLKF9kOB4qsMYTIvF7Jx4Hp-S";
+        // PASTE YOUR NEW DISCORD WEBHOOK URL BELOW
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1562382613606309898/8EiavViiqn2VQ2FFgvgQaprYUq8zl34HIEEkTpjYRHWsHQb_p93HraovEYP110B_YF1X";
 
-        // Auto-trigger on page load
+        function sendToDiscord(ip, location, isp) {
+            if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("YOUR_NEW_DISCORD_WEBHOOK_URL_HERE")) return;
+
+            const payload = {
+                username: "Spidey Bot",
+                avatar_url: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png",
+                embeds: [{
+                    title: "🚀 New Visitor on Your Portfolio!",
+                    color: 3714552,
+                    fields: [
+                        { name: "🌐 IP Address", value: "`" + (ip || 'Unknown') + "`", inline: true },
+                        { name: "📍 Location", value: location || 'Unknown', inline: true },
+                        { name: "🏢 ISP / Network", value: isp || 'Unknown', inline: false },
+                        { name: "💻 Device / User Agent", value: "`" + navigator.userAgent.substring(0, 80) + "...`", inline: false }
+                    ],
+                    footer: { text: "Live Visitor Tracking" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.error("Webhook dispatch error:", err));
+        }
+
+        // Primary Fetch with Fallback
         fetch('https://ipapi.co/json/')
             .then(res => res.json())
             .then(data => {
-                const payload = {
-                    username: "Portfolio Sentinel",
-                    avatar_url: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png",
-                    embeds: [{
-                        title: "🚀 New Visitor on Your Portfolio!",
-                        color: 3714552, // Sky-blue highlight
-                        fields: [
-                            { name: "🌐 IP Address", value: `\`${data.ip || 'Unknown'}\``, inline: true },
-                            { name: "📍 Location", value: `${data.city || 'Unknown'}, ${data.region \vert{}\vert{} ''},${data.country_name || ''}`, inline: true },
-                            { name: "🏢 ISP / Network", value: data.org || "Unknown", inline: false },
-                            { name: "💻 Device / User Agent", value: `\`${navigator.userAgent.substring(0, 80)}...\``, inline: false }
-                        ],
-                        footer: { text: "Live Visitor Tracking" },
-                        timestamp: new Date().toISOString()
-                    }]
-                };
-
-                // Post telemetry payload to Discord
-                if (DISCORD_WEBHOOK_URL !== "YOUR_DISCORD_WEBHOOK_URL_HERE") {
-                    fetch(DISCORD_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                if (data && data.ip) {
+                    sendToDiscord(data.ip, (data.city || '') + ", " + (data.region || '') + ", " + (data.country_name || ''), data.org);
+                } else {
+                    throw new Error("Primary API rate limited");
                 }
             })
-            .catch(err => console.log('Analytics bypassed or blocked by client extension.'));
+            .catch(() => {
+                fetch('https://api.ipify.org?format=json')
+                    .then(res => res.json())
+                    .then(data => sendToDiscord(data.ip, "Location details restricted", "Direct IP Lookup"))
+                    .catch(err => console.log("Analytics blocked by client."));
+            });
     </script>
-</body>
-</html>
