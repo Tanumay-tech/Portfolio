@@ -91,7 +91,7 @@
                 <a href="https://www.linkedin.com/in/tanumaychatterjee" target="_blank" class="hover:text-sky-400 transition flex items-center gap-1">
                     <i data-lucide="linkedin" class="w-4 h-4"></i> <span class="hidden md:inline">LinkedIn</span>
                 </a>
-                <a href="#contact" onclick="switchTab('contact')" class="bg-sky-400/20 text-sky-300 border border-sky-400/40 px-3 py-1.5 rounded-full hover:bg-sky-400 hover:text-slate-950 font-medium transition">
+                <a href="#contact" onclick="switchTab('contact', event)" class="bg-sky-400/20 text-sky-300 border border-sky-400/40 px-3 py-1.5 rounded-full hover:bg-sky-400 hover:text-slate-950 font-medium transition">
                     Hire / Connect
                 </a>
             </div>
@@ -139,20 +139,24 @@
 
         <!-- Navigation Tabs for Clutter-Free Browsing -->
         <div class="flex flex-wrap justify-center gap-2 mb-8 glass-panel p-2 rounded-2xl max-w-3xl mx-auto">
-            <button onclick="switchTab('overview')" class="tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+            <button onclick="switchTab('overview', event)" class="tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i> Overview & Skills
             </button>
-            <button onclick="switchTab('projects')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+            <button onclick="switchTab('projects', event)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
                 <i data-lucide="folder-git-2" class="w-4 h-4"></i> Projects
             </button>
-            <button onclick="switchTab('experience')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+            <button onclick="switchTab('experience', event)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
                 <i data-lucide="briefcase" class="w-4 h-4"></i> Experience & Timeline
             </button>
-            <button onclick="switchTab('creatives')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+            <button onclick="switchTab('creatives', event)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
                 <i data-lucide="aperture" class="w-4 h-4"></i> Media & Hobbies
             </button>
-            <button onclick="switchTab('contact')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
+            <button onclick="switchTab('contact', event)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-transparent">
                 <i data-lucide="mail" class="w-4 h-4"></i> Contact
+            </button>
+            <!-- Admin Tab (Hidden by default, unhidden via URL parameter ?admin=true) -->
+            <button id="admin-tab-btn" onclick="switchTab('admin', event)" class="tab-btn hidden px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 border border-rose-500/30 text-rose-400 bg-rose-500/10 hover:bg-rose-500/20">
+                <i data-lucide="shield-alert" class="w-4 h-4"></i> Visitor Logs
             </button>
         </div>
 
@@ -416,6 +420,41 @@
             </div>
         </div>
 
+        <!-- TAB CONTENT 6: ADMIN VISITOR LOGS (HIDDEN IN STANDARD VIEW) -->
+        <div id="tab-admin" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-rose-500/20">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-rose-400 flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i> Visitor Telemetry Audit Trail
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Real-time local visitor telemetry recorded on client execution</p>
+                    </div>
+                    <button onclick="clearVisitorLogs()" class="px-3 py-1.5 rounded-lg text-xs bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500 hover:text-white transition">
+                        Clear Logs
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-slate-400">
+                                <th class="pb-3 font-semibold">Timestamp</th>
+                                <th class="pb-3 font-semibold">IP Address</th>
+                                <th class="pb-3 font-semibold">Location</th>
+                                <th class="pb-3 font-semibold">ISP / Network</th>
+                                <th class="pb-3 font-semibold">Device Info</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitor-log-table-body" class="divide-y divide-white/5 text-slate-300">
+                            <!-- Dynamic Log Rows Inject Here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p id="no-logs-msg" class="text-xs text-slate-500 text-center py-6 hidden">No visitor logs recorded in local storage yet.</p>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
@@ -423,18 +462,22 @@
         <p>© Tanumay Chatterjee | All Rights Reserved</p>
     </footer>
 
-    <!-- Interactive Scripts -->
+    <!-- Interactive & Canvas Scripts -->
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
 
         // Tab Switching Logic
-        function switchTab(tabId) {
+        function switchTab(tabId, evt) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+            const targetContent = document.getElementById(`tab-${tabId}`);
+            if (targetContent) targetContent.classList.remove('hidden');
+            
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add('active');
+            }
         }
 
         // Form Submit Handler
@@ -455,7 +498,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Particle Geometry
         const particlesCount = 700;
         const posArray = new Float32Array(particlesCount * 3);
 
@@ -478,7 +520,6 @@
 
         camera.position.z = 3;
 
-        // Smooth Mouse Parallax Effect
         let mouseX = 0;
         let mouseY = 0;
 
@@ -487,12 +528,10 @@
             mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
         });
 
-        // Animation Loop
         const clock = new THREE.Clock();
 
         function animate() {
             const elapsedTime = clock.getElapsedTime();
-
             particlesMesh.rotation.y = elapsedTime * 0.05;
             particlesMesh.rotation.x = -mouseY * 0.5;
             particlesMesh.rotation.y += mouseX * 0.5;
@@ -503,7 +542,6 @@
 
         animate();
 
-        // Responsive Resize Handler
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -511,53 +549,109 @@
         });
     </script>
 
-    <!-- Discord Visitor Telemetry Script -->
-<!-- Discord Visitor Telemetry Script -->
+    <!-- Admin Panel & Telemetry Engine Script -->
     <script>
-        // PASTE YOUR NEW DISCORD WEBHOOK URL BELOW
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1562382613606309898/8EiavViiqn2VQ2FFgvgQaprYUq8zl34HIEEkTpjYRHWsHQb_p93HraovEYP110B_YF1X";
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1562379838688596079/YcaQ1_aqrO0Gh8kXsXTESMDNmK7hCCe-Qr8JNyR8dqyLKF9k064qsMYTiVF7Jx4Hp-S";
 
-        function sendToDiscord(ip, location, isp) {
-            if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("YOUR_NEW_DISCORD_WEBHOOK_URL_HERE")) return;
-
-            const payload = {
-                username: "Spidey Bot",
-                avatar_url: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png",
-                embeds: [{
-                    title: "🚀 New Visitor on Your Portfolio!",
-                    color: 3714552,
-                    fields: [
-                        { name: "🌐 IP Address", value: "`" + (ip || 'Unknown') + "`", inline: true },
-                        { name: "📍 Location", value: location || 'Unknown', inline: true },
-                        { name: "🏢 ISP / Network", value: isp || 'Unknown', inline: false },
-                        { name: "💻 Device / User Agent", value: "`" + navigator.userAgent.substring(0, 80) + "...`", inline: false }
-                    ],
-                    footer: { text: "Live Visitor Tracking" },
-                    timestamp: new Date().toISOString()
-                }]
+        // Record session and persist to browser LocalStorage
+        function logVisitorSession(ip, location, isp) {
+            const newEntry = {
+                timestamp: new Date().toLocaleString(),
+                ip: ip || 'Unknown',
+                location: location || 'Unknown',
+                isp: isp || 'Unknown',
+                agent: navigator.userAgent.substring(0, 50) + '...'
             };
 
-            fetch(DISCORD_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).catch(err => console.error("Webhook dispatch error:", err));
+            let logs = JSON.parse(localStorage.getItem('portfolio_visitor_logs') || '[]');
+            logs.unshift(newEntry);
+            localStorage.setItem('portfolio_visitor_logs', JSON.stringify(logs));
+
+            renderLogsTable();
+
+            // Send background telemetry payload
+            if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL.startsWith('http')) {
+                const payload = {
+                    username: "Spidey Bot",
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png",
+                    embeds: [{
+                        title: "🚀 New Visitor Recorded!",
+                        color: 3714552,
+                        fields: [
+                            { name: "🌐 IP Address", value: "`" + newEntry.ip + "`", inline: true },
+                            { name: "📍 Location", value: newEntry.location, inline: true },
+                            { name: "🏢 ISP", value: newEntry.isp, inline: false }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+                fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(() => {});
+            }
         }
 
-        // Primary Fetch with Fallback
-        fetch('https://ipapi.co/json/')
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.ip) {
-                    sendToDiscord(data.ip, (data.city || '') + ", " + (data.region || '') + ", " + (data.country_name || ''), data.org);
-                } else {
-                    throw new Error("Primary API rate limited");
-                }
-            })
-            .catch(() => {
-                fetch('https://api.ipify.org?format=json')
-                    .then(res => res.json())
-                    .then(data => sendToDiscord(data.ip, "Location details restricted", "Direct IP Lookup"))
-                    .catch(err => console.log("Analytics blocked by client."));
+        // Render table rows in Admin Tab
+        function renderLogsTable() {
+            const tableBody = document.getElementById('visitor-log-table-body');
+            const noLogsMsg = document.getElementById('no-logs-msg');
+            if (!tableBody) return;
+
+            const logs = JSON.parse(localStorage.getItem('portfolio_visitor_logs') || '[]');
+            tableBody.innerHTML = '';
+
+            if (logs.length === 0) {
+                if (noLogsMsg) noLogsMsg.classList.remove('hidden');
+                return;
+            }
+
+            if (noLogsMsg) noLogsMsg.classList.add('hidden');
+            logs.forEach(entry => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-white/5 transition";
+                row.innerHTML = `
+                    <td class="py-3 text-slate-400 font-mono text-[11px]">${entry.timestamp}</td>
+                    <td class="py-3 font-mono text-sky-400">${entry.ip}</td>
+                    <td class="py-3">${entry.location}</td>
+                    <td class="py-3 text-slate-400">${entry.isp}</td>
+                    <td class="py-3 text-slate-500 text-[10px] truncate max-w-[150px]">${entry.agent}</td>
+                `;
+                tableBody.appendChild(row);
             });
+        }
+
+        function clearVisitorLogs() {
+            localStorage.removeItem('portfolio_visitor_logs');
+            renderLogsTable();
+        }
+
+        // Initialize telemetry & Check for secret ?admin=true flag
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isAdmin = urlParams.get('admin') === 'true' || window.location.hash === '#admin';
+
+            if (isAdmin) {
+                const adminBtn = document.getElementById('admin-tab-btn');
+                if (adminBtn) adminBtn.classList.remove('hidden');
+                renderLogsTable();
+            }
+
+            // Primary Fetch Strategy with Fallback
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const loc = (data.city || '') + (data.region ? ', ' + data.region : '') + (data.country_name ? ', ' + data.country_name : '');
+                    logVisitorSession(data.ip, loc || 'Unknown', data.org || 'Unknown');
+                })
+                .catch(() => {
+                    fetch('https://api.ipify.org?format=json')
+                        .then(res => res.json())
+                        .then(data => logVisitorSession(data.ip, "Direct Lookup", "ISP Restricted"))
+                        .catch(() => logVisitorSession('Bypassed/Blocked', 'Unknown', 'Client Shield'));
+                });
+        });
     </script>
+</body>
+</html>
